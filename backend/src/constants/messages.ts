@@ -8,9 +8,9 @@ export const errorMessages = {
 	answerAlreadyLocked: "Answer already locked",
 	revisionConflict: "Revision conflict",
 	attemptNotComplete: "Attempt is not complete",
+	timingAlreadyRecorded: "Timing attempt already recorded for this day",
 	internal: "Internal server error",
 	rateLimited: "Too many requests. Try again later.",
-
 	missingStartDate: "Pass --start-date YYYY-MM-DD when seeding",
 	invalidStartDate: "Invalid --start-date; expected YYYY-MM-DD",
 } as const;
@@ -24,6 +24,7 @@ export const errorCodes = {
 	ANSWER_ALREADY_LOCKED: "ANSWER_ALREADY_LOCKED",
 	REVISION_CONFLICT: "REVISION_CONFLICT",
 	ATTEMPT_NOT_COMPLETE: "ATTEMPT_NOT_COMPLETE",
+	TIMING_ALREADY_RECORDED: "TIMING_ALREADY_RECORDED",
 	RATE_LIMITED: "RATE_LIMITED",
 	SERVICE_UNAVAILABLE: "SERVICE_UNAVAILABLE",
 } as const;

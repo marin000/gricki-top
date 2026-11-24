@@ -16,6 +16,7 @@ import {
 	postDeviceRegister,
 	postQuizAnswer,
 	postQuizAttempt,
+	postTimingAttempt,
 	putStoryProgress,
 } from "./controllers";
 import { rateLimitAnswers, rateLimitRead, rateLimitRegister, requireDevice } from "./middleware";
@@ -25,6 +26,7 @@ import {
 	quizAttemptsValidator,
 	quizzesValidator,
 	storiesValidator,
+	timingAttemptsValidator,
 	validateRequest,
 } from "./validators";
 
@@ -87,6 +89,14 @@ router.get(
 	...quizAttemptsValidator.results,
 	validateRequest,
 	getResults,
+);
+router.post(
+	"/v1/me/timing-attempts",
+	requireDevice,
+	rateLimitRead,
+	...timingAttemptsValidator.create,
+	validateRequest,
+	postTimingAttempt,
 );
 
 router.put(

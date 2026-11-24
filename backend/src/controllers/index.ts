@@ -12,3 +12,4 @@ export {
 export { getQuiz } from "./quizzes";
 export { getStories, getStory, getStoryMain } from "./stories";
 export { getTime } from "./time";
+export { postTimingAttempt } from "./timing-attempts";

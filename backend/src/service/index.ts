@@ -30,3 +30,4 @@ export {
 	nowInZagreb,
 	publishAtForDay,
 } from "./time";
+export { createTimingAttempt, listTimingResults } from "./timing-attempts";
