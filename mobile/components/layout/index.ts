@@ -1,1 +1,1 @@
-export {};
+export { BootstrapGate } from "./bootstrap-gate";
