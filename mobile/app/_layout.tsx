@@ -8,7 +8,7 @@ import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 
-import { BootstrapGate } from "@/components";
+import { AppLifecycle, BootstrapGate } from "@/components";
 import { theme } from "@/constants";
 import { DeviceProvider } from "@/context";
 import { useRootLayoutState } from "@/hooks";
@@ -27,24 +27,25 @@ export default function RootLayout() {
 	}
 
 	return (
-		<GestureHandlerRootView
-			style={{ flex: 1, backgroundColor: theme.background }}
-		>
+		<GestureHandlerRootView style={{ flex: 1, backgroundColor: theme.background }}>
 			<QueryClientProvider client={queryClient}>
 				<DeviceProvider>
-					<StatusBar style="dark" />
-					<BootstrapGate>
-						<Stack
-							screenOptions={{
-								headerShown: false,
-								contentStyle: { backgroundColor: theme.background },
-								animation: "slide_from_right",
-							}}
-						>
-							<Stack.Screen name="index" />
-							<Stack.Screen name="(tabs)" />
-						</Stack>
-					</BootstrapGate>
+					<AppLifecycle>
+						<StatusBar style="dark" />
+						<BootstrapGate>
+							<Stack
+								screenOptions={{
+									headerShown: false,
+									contentStyle: { backgroundColor: theme.background },
+									animation: "slide_from_right",
+								}}
+							>
+								<Stack.Screen name="index" />
+								<Stack.Screen name="(tabs)" />
+								<Stack.Screen name="story/[id]" />
+							</Stack>
+						</BootstrapGate>
+					</AppLifecycle>
 				</DeviceProvider>
 			</QueryClientProvider>
 		</GestureHandlerRootView>
