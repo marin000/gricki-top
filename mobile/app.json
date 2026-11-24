@@ -50,7 +50,16 @@
           "color": "#174F78"
         }
       ],
-      "expo-av"
+      "expo-av",
+      "expo-keep-awake",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "extraProguardRules": "-dontwarn expo.modules.core.interfaces.services.KeepAwakeManager\n-keep class expo.modules.core.interfaces.services.KeepAwakeManager { *; }\n-keep class expo.modules.keepawake.** { *; }"
+          }
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

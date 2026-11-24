@@ -87,6 +87,16 @@ eas build --profile production --platform all
 
 Native ikone, splash i zvuk topa ulaze u build iz `mobile/assets/`. Expo Go ne zamjenjuje potpuno native module (AV / notifikacije).
 
+**Zašto `expo start` ne uhvati EAS Gradle greške:** debug/Metro ne pokreće Android R8 minify. SDK 58 u release/preview buildu minify uključuje po defaultu. Lokalna detekcija (treba Android SDK / JDK):
+
+```bash
+cd mobile
+npm run doctor                 # dependency / unmaintained warnings
+npm run android:release:check  # prebuild + assembleRelease (uključuje R8)
+```
+
+`android/` ostaje lokalno (gitignore); ne commitaj ga.
+
 ## Vlasnički resursi (checklist)
 
 - MongoDB Atlas URI + odvojene development / production baze
