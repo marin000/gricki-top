@@ -10,4 +10,5 @@ export {
 	submitQuizAnswer,
 } from "./quiz";
 export { fetchMainStory, fetchStories, fetchStory } from "./stories";
+export { createTimingAttempt, fetchTimingResults } from "./timing";
 export { fetchServerTime } from "./time";

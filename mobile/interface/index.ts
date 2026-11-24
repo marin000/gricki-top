@@ -29,4 +29,10 @@ export {
 	storySourceSchema,
 	storySummarySchema,
 } from "./stories";
+export {
+	type TimingAttempt,
+	type TimingResultsList,
+	timingAttemptSchema,
+	timingResultsListSchema,
+} from "./timing";
 export { type ClockSnapshot, clockSnapshotSchema } from "./time";

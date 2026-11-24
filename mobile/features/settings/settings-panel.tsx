@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import { Linking, Pressable, Text, View } from "react-native";
 
-import { PageHeader, Screen, SectionHeader, Toggle } from "@/components";
+import { AppHeader, Screen, SectionHeader, Toggle } from "@/components";
 import { theme } from "@/constants";
 import { useSettings } from "@/hooks";
 
@@ -12,7 +12,13 @@ export const SettingsPanel = () => {
 
 	return (
 		<Screen scroll>
-			<PageHeader eyebrow={t("settings.eyebrow")} title={t("settings.headline")} subtitle={t("settings.subtitle")} />
+			<AppHeader eyebrow={t("settings.eyebrow")} />
+			<Text className="mt-5 font-display text-3xl leading-9 text-ink-primary">
+				{t("settings.headline")}
+			</Text>
+			<Text className="mt-3 font-body text-base leading-6 text-ink-muted">
+				{t("settings.subtitle")}
+			</Text>
 
 			<View className="mt-8 flex-row items-end gap-4">
 				<Text className="font-display-bold text-5xl text-red">1877.</Text>
