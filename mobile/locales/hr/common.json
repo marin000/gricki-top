@@ -1,0 +1,28 @@
+{
+	"appName": "Grički top",
+	"tabs": {
+		"top": "Top",
+		"stories": "Zanimljivosti",
+		"results": "Rezultati",
+		"settings": "Postavke"
+	},
+	"top": {
+		"title": "Podne u Zagrebu",
+		"subtitle": "Countdown i doživljaj topa stižu u sljedećoj fazi.",
+		"bootstrapOk": "Sinkronizirano sa serverom",
+		"bootstrapPending": "Učitavam sat…",
+		"bootstrapError": "Nema veze sa serverom — lokalni sat ostaje aktivan."
+	},
+	"stories": {
+		"title": "Zanimljivosti",
+		"empty": "Arhiva priča bit će dostupna nakon seedanja i Faze 3."
+	},
+	"results": {
+		"title": "Rezultati",
+		"empty": "Osobni timing i kviz rezultati stižu u kasnijim fazama."
+	},
+	"settings": {
+		"title": "Postavke",
+		"hint": "Zvuk, vibracija i podsjetnici dolaze u Fazi 5."
+	}
+}
