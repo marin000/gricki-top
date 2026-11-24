@@ -15,16 +15,53 @@
 	},
 	"stories": {
 		"title": "Zanimljivosti",
+		"eyebrow": "Svaki dan u podne",
+		"headline": "Zagrebačke priče, jednu po jednu.",
+		"subtitle": "Male povijesti, predaje i mjesta koja oblikuju grad.",
 		"empty": "Još nema objavljenih priča.",
-		"loadError": "Ne mogu učitati priče."
+		"loadError": "Ne mogu učitati priče.",
+		"archiveHeading": "Prethodne priče",
+		"archiveCount": "{{count}} priča",
+		"archiveEmpty": "Još nema starijih priča u arhivi.",
+		"back": "Natrag",
+		"dayLabel": "Dan {{day}}",
+		"mainLabel": "Glavna priča",
+		"readerBadge": "Priča",
+		"readerError": "Priča nije dostupna",
+		"readerErrorHint": "Možda još nije objavljena ili nema mreže.",
+		"sources": "Izvori i daljnje čitanje",
+		"quizSoonEyebrow": "Dnevni izazov",
+		"quizSoonTitle": "Provjeri što pamtiš",
+		"quizSoonBody": "Kviz od pet pitanja stiže u sljedećoj fazi.",
+		"markRead": "Označi kao pročitano",
+		"alreadyRead": "Pročitano"
 	},
-
 	"results": {
 		"title": "Rezultati",
 		"empty": "Osobni timing i kviz rezultati stižu u kasnijim fazama."
 	},
 	"settings": {
 		"title": "Postavke",
-		"hint": "Zvuk, vibracija i podsjetnici dolaze u Fazi 5."
+		"eyebrow": "O topu i postavke",
+		"headline": "O topu i postavke",
+		"subtitle": "Upravljaj zvukom, vibracijom i podsjetnikom.",
+
+		"tradition": "Zagrebačka tradicija",
+		"heroTitle": "Jedan pucanj. Gotovo stoljeće i pol.",
+		"aboutBody1": "Svaki dan točno u podne s kule Lotrščak odjekne pucanj Gričkog topa. Zagrepčanima je to znak za podne još od 1877. godine.",
+		"aboutBody2": "Ova mala digitalna uspomena čuva taj trenutak blizu — gdje god se nalazili.",
+		"locationEyebrow": "Pronađi top",
+		"locationTitle": "Kula Lotrščak",
+		"locationAddress": "Strossmayerovo šetalište 9\nGornji grad, Zagreb",
+		"openMap": "Otvori kartu",
+		"experienceHeading": "Postavke doživljaja",
+		"reminder": "Podsjetnik za podne",
+		"reminderHint": "Lokalna obavijest prije pucnja",
+		"sound": "Zvuk topa",
+		"soundHint": "Digitalna rekreacija pucnja",
+		"haptics": "Haptički odziv",
+		"hapticsHint": "Blaga vibracija pri pucnju",
+		"recreationNote": "Zvuk u aplikaciji je pažljivo izrađena digitalna rekreacija, a ne prijenos uživo iz kule Lotrščak.",
+		"footer": "Napravljeno s poštovanjem prema Zagrebu · v1.0"
 	}
 }
