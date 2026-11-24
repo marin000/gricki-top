@@ -32,20 +32,55 @@
 		"sources": "Izvori i daljnje čitanje",
 		"quizSoonEyebrow": "Dnevni izazov",
 		"quizSoonTitle": "Provjeri što pamtiš",
-		"quizSoonBody": "Kviz od pet pitanja stiže u sljedećoj fazi.",
+		"quizSoonBody": "Za ovu priču kviz još nije dostupan.",
+		"quizInviteBody": "Pet pitanja, bez žurbe. Bodove računa poslužitelj.",
+		"quizStart": "Zaigraj dnevni kviz",
+		"quizContinue": "Nastavi kviz",
+		"quizOpenResult": "Pogledaj rezultat",
 		"markRead": "Označi kao pročitano",
 		"alreadyRead": "Pročitano"
 	},
 	"results": {
 		"title": "Rezultati",
-		"empty": "Osobni timing i kviz rezultati stižu u kasnijim fazama."
+		"eyebrow": "Dnevni kviz",
+		"subtitle": "Osobni bodovi i povijest dovršenih kvizova.",
+		"empty": "Još nema dovršenih kvizova.",
+		"completed": "Dovršeni kvizovi",
+		"totalScore": "Ukupni bodovi",
+		"average": "Prosjek"
+	},
+	"quiz": {
+		"title": "Dnevni kviz",
+		"close": "Zatvori",
+		"progress": "{{index}} / {{total}}",
+		"questionIndex": "Pitanje {{index}}",
+		"confirm": "Potvrdi odgovor",
+		"next": "Sljedeće pitanje",
+		"seeResult": "Pogledaj rezultat",
+		"correct": "Točno",
+		"wrong": "Netočno",
+		"loadError": "Kviz nije dostupan.",
+		"submitError": "Slanje odgovora nije uspjelo. Pokušaj ponovno.",
+		"score": "{{score}} / 5",
+		"resultEyebrow": "Rezultat",
+		"review": "Pregledaj odgovore",
+		"reviewTitle": "Pregled odgovora",
+		"finish": "Završi",
+		"skip": "Preskoči",
+		"funicular": {
+			"0": "Danas ostajemo u Donjem gradu. Sutra nova prilika!",
+			"1": "Prvi korak prema Gornjem gradu!",
+			"2": "Dobro napreduješ!",
+			"3": "Više od pola puta je iza tebe!",
+			"4": "Još malo do Gornjeg grada!",
+			"5": "Stigao si na Gornji grad!"
+		}
 	},
 	"settings": {
 		"title": "Postavke",
 		"eyebrow": "O topu i postavke",
 		"headline": "O topu i postavke",
 		"subtitle": "Upravljaj zvukom, vibracijom i podsjetnikom.",
-
 		"tradition": "Zagrebačka tradicija",
 		"heroTitle": "Jedan pucanj. Gotovo stoljeće i pol.",
 		"aboutBody1": "Svaki dan točno u podne s kule Lotrščak odjekne pucanj Gričkog topa. Zagrepčanima je to znak za podne još od 1877. godine.",

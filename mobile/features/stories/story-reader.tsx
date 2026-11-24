@@ -87,11 +87,31 @@ export const StoryReader = ({ storyId }: StoryReaderProps) => {
 					))}
 				</View>
 
-				<View className="mt-6 rounded-2xl border border-line bg-cream-deep p-4">
-					<Text className="font-body text-xs uppercase tracking-wide text-ink-muted">{t("stories.quizSoonEyebrow")}</Text>
-					<Text className="mt-1 font-display text-2xl text-ink-primary">{t("stories.quizSoonTitle")}</Text>
-					<Text className="mt-1 font-body text-base text-ink-muted">{t("stories.quizSoonBody")}</Text>
-				</View>
+				{story.quiz ? (
+					<View className="mt-6 rounded-2xl border border-line bg-cream-deep p-4">
+						<Text className="font-body text-xs uppercase tracking-wide text-ink-muted">{t("stories.quizSoonEyebrow")}</Text>
+						<Text className="mt-1 font-display text-2xl text-ink-primary">{t("stories.quizSoonTitle")}</Text>
+						<Text className="mt-1 font-body text-base text-ink-muted">{t("stories.quizInviteBody")}</Text>
+						<View className="mt-4">
+							<Button
+								label={
+									story.quiz.attemptStatus === "completed"
+										? t("stories.quizOpenResult")
+										: story.quiz.attemptStatus === "in_progress"
+											? t("stories.quizContinue")
+											: t("stories.quizStart")
+								}
+								onPress={() => router.push(`/quiz/${story.quiz?.dailyQuizId}`)}
+							/>
+						</View>
+					</View>
+				) : (
+					<View className="mt-6 rounded-2xl border border-line bg-cream-deep p-4">
+						<Text className="font-body text-xs uppercase tracking-wide text-ink-muted">{t("stories.quizSoonEyebrow")}</Text>
+						<Text className="mt-1 font-display text-2xl text-ink-primary">{t("stories.quizSoonTitle")}</Text>
+						<Text className="mt-1 font-body text-base text-ink-muted">{t("stories.quizSoonBody")}</Text>
+					</View>
+				)}
 
 				<View className="mt-6">
 					<Button

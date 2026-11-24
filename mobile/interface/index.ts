@@ -11,6 +11,17 @@ export {
 	quizMetadataSchema,
 } from "./progress";
 export {
+	type QuizAttempt,
+	type QuizResult,
+	type QuizResultsList,
+	quizAnswerFeedbackSchema,
+	quizAnswerResponseSchema,
+	quizAttemptSchema,
+	quizQuestionSchema,
+	quizResultSchema,
+	quizResultsListSchema,
+} from "./quiz";
+export {
 	type StoryDetail,
 	type StorySummary,
 	storiesListSchema,
