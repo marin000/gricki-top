@@ -1,6 +1,38 @@
 import { type InferSchemaType, model, Schema } from "mongoose";
 
-/** Minimal schema for Phase 2 metadata; full attempt flow lands in Phase 4. */
+const optionSchema = new Schema(
+	{
+		id: { type: String, enum: ["A", "B", "C", "D"], required: true },
+		text: { type: String, required: true },
+	},
+	{ _id: false },
+);
+
+const questionSnapshotSchema = new Schema(
+	{
+		questionId: { type: String, required: true },
+		questionVersion: { type: Number, required: true },
+		sourceStoryId: { type: String, required: true },
+		prompt: { type: String, required: true },
+		options: { type: [optionSchema], required: true },
+		correctOptionId: { type: String, enum: ["A", "B", "C", "D"], required: true },
+		explanation: { type: String, required: true },
+		sourceIds: { type: [String], default: [] },
+	},
+	{ _id: false },
+);
+
+const answerSchema = new Schema(
+	{
+		questionId: { type: String, required: true },
+		selectedOptionId: { type: String, enum: ["A", "B", "C", "D"], required: true },
+		isCorrect: { type: Boolean, required: true },
+		answeredAt: { type: Date, required: true },
+		clientRequestId: { type: String, required: true },
+	},
+	{ _id: false },
+);
+
 const quizAttemptSchema = new Schema(
 	{
 		id: { type: String, required: true, unique: true },
@@ -17,6 +49,8 @@ const quizAttemptSchema = new Schema(
 		score: { type: Number, default: null },
 		nextQuestionIndex: { type: Number, default: 0 },
 		revision: { type: Number, default: 0 },
+		questionSnapshots: { type: [questionSnapshotSchema], default: [] },
+		answers: { type: [answerSchema], default: [] },
 	},
 	{ timestamps: true },
 );

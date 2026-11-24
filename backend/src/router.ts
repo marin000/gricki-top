@@ -5,18 +5,24 @@ import {
 	getHealth,
 	getProgress,
 	getQuiz,
+	getQuizAttempt,
+	getQuizAttemptResultHandler,
+	getResults,
 	getStories,
 	getStory,
 	getStoryMain,
 	getTime,
 	patchSettings,
 	postDeviceRegister,
+	postQuizAnswer,
+	postQuizAttempt,
 	putStoryProgress,
 } from "./controllers";
-import { rateLimitRead, rateLimitRegister, requireDevice } from "./middleware";
+import { rateLimitAnswers, rateLimitRead, rateLimitRegister, requireDevice } from "./middleware";
 import {
 	devicesValidator,
 	progressValidator,
+	quizAttemptsValidator,
 	quizzesValidator,
 	storiesValidator,
 	validateRequest,
@@ -41,6 +47,47 @@ router.get("/v1/stories/main", requireDevice, rateLimitRead, getStoryMain);
 router.get("/v1/stories/:id", requireDevice, rateLimitRead, ...storiesValidator.byId, validateRequest, getStory);
 
 router.get("/v1/quizzes/:id", requireDevice, rateLimitRead, ...quizzesValidator.byId, validateRequest, getQuiz);
+router.post(
+	"/v1/quizzes/:id/attempt",
+	requireDevice,
+	rateLimitRead,
+	...quizAttemptsValidator.create,
+	validateRequest,
+	postQuizAttempt,
+);
+
+router.get(
+	"/v1/me/quiz-attempts/:id",
+	requireDevice,
+	rateLimitRead,
+	...quizAttemptsValidator.byId,
+	validateRequest,
+	getQuizAttempt,
+);
+router.post(
+	"/v1/me/quiz-attempts/:id/answers",
+	requireDevice,
+	rateLimitAnswers,
+	...quizAttemptsValidator.answer,
+	validateRequest,
+	postQuizAnswer,
+);
+router.get(
+	"/v1/me/quiz-attempts/:id/result",
+	requireDevice,
+	rateLimitRead,
+	...quizAttemptsValidator.byId,
+	validateRequest,
+	getQuizAttemptResultHandler,
+);
+router.get(
+	"/v1/me/results",
+	requireDevice,
+	rateLimitRead,
+	...quizAttemptsValidator.results,
+	validateRequest,
+	getResults,
+);
 
 router.put(
 	"/v1/me/story-progress/:storyId",

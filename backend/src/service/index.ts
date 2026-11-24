@@ -6,6 +6,13 @@ export { validateContentPack } from "./content-validate";
 export { connectDatabase } from "./database";
 export { findDeviceByCredentials, registerDevice, touchDeviceDaily } from "./devices";
 export { getDeviceProgress, patchDeviceSettings, upsertStoryProgress } from "./progress";
+export {
+	createOrGetQuizAttempt,
+	getQuizAttemptForDevice,
+	getQuizAttemptResult,
+	listQuizResults,
+	submitQuizAnswer,
+} from "./quiz-attempts";
 export { getQuizMetadata } from "./quizzes";
 export {
 	consumeAnswerLimit,
