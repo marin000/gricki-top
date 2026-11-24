@@ -38,9 +38,9 @@ export const BrandMark = ({ compact = false }: BrandMarkProps) => {
 					fill="none"
 				/>
 			</Svg>
-			<View className="ml-2">
-				<Text className="font-display-bold text-[19px] leading-[15px] text-blue">Grički</Text>
-				<Text className="ml-3 font-display-italic text-[19px] leading-[15px] text-red">top</Text>
+			<View className="ml-2 pb-1">
+				<Text className="font-display-bold text-[19px] leading-5 text-blue">Grički</Text>
+				<Text className="ml-3 font-display-italic text-[19px] leading-5 text-red">top</Text>
 			</View>
 		</View>
 	);
