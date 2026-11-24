@@ -1,5 +1,6 @@
 export { useAppForegroundRefresh } from "./use-app-foreground-refresh";
 export { useDailyStorySheet } from "./use-daily-story-sheet";
+export { useDeleteAccount } from "./use-delete-account";
 export { useFunicularAnimation } from "./use-funicular-animation";
 export { useNoonReminders } from "./use-noon-reminders";
 export { useQuizFlow } from "./use-quiz-flow";

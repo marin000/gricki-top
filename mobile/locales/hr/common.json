@@ -167,6 +167,14 @@
 		"haptics": "Haptički odziv",
 		"hapticsHint": "Blaga vibracija pri pucnju",
 		"recreationNote": "Zvuk u aplikaciji je pažljivo izrađena digitalna rekreacija, a ne prijenos uživo iz kule Lotrščak.",
+		"deleteHeading": "Podaci",
+		"deleteLabel": "Izbriši moje podatke",
+		"deleteHint": "Briše napredak na ovom uređaju. Sadržaj ostaje.",
+		"deleteConfirmTitle": "Trajno obrisati podatke?",
+		"deleteConfirmBody": "Obrisat će se tvoj napredak, rezultati i lokalne postavke. Priče i kvizovi ostaju. Radnja se ne može poništiti.",
+		"deleteConfirm": "Izbriši",
+		"deleteCancel": "Odustani",
+		"deleteError": "Brisanje nije uspjelo. Provjeri vezu i pokušaj ponovno.",
 		"footer": "Napravljeno s poštovanjem prema Zagrebu · v1.0"
 	}
 }

@@ -1,14 +1,26 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
-import { Linking, Pressable, Text, View } from "react-native";
+import { ActivityIndicator, Alert, Linking, Modal, Pressable, Text, View } from "react-native";
 
-import { AppHeader, Screen, SectionHeader, Toggle } from "@/components";
+import { AppHeader, Button, Screen, SectionHeader, Toggle } from "@/components";
 import { theme } from "@/constants";
-import { useSettings } from "@/hooks";
+import { useDeleteAccount, useSettings } from "@/hooks";
 
 export const SettingsPanel = () => {
 	const { t } = useTranslation();
 	const { settings, patchMutation } = useSettings();
+	const { confirmVisible, openConfirm, closeConfirm, deleteMutation } = useDeleteAccount();
+
+	const onConfirmDelete = () => {
+		deleteMutation.mutate(undefined, {
+			onSuccess: () => {
+				closeConfirm();
+			},
+			onError: () => {
+				Alert.alert(t("settings.deleteLabel"), t("settings.deleteError"));
+			},
+		});
+	};
 
 	return (
 		<Screen scroll>
@@ -26,7 +38,9 @@ export const SettingsPanel = () => {
 					<Text className="font-body-semibold text-xs uppercase tracking-widest text-ink-muted">
 						{t("settings.tradition")}
 					</Text>
-					<Text className="mt-1 font-display text-2xl leading-7 text-ink-primary">{t("settings.heroTitle")}</Text>
+					<Text className="mt-1 font-display text-2xl leading-7 text-ink-primary">
+						{t("settings.heroTitle")}
+					</Text>
 				</View>
 			</View>
 
@@ -34,7 +48,9 @@ export const SettingsPanel = () => {
 			<Text className="mt-3 font-body text-base leading-6 text-ink-muted">{t("settings.aboutBody2")}</Text>
 
 			<View className="mt-6 rounded-3xl border border-line bg-cream p-4">
-				<Text className="font-body-semibold text-xs uppercase tracking-widest text-red">{t("settings.locationEyebrow")}</Text>
+				<Text className="font-body-semibold text-xs uppercase tracking-widest text-red">
+					{t("settings.locationEyebrow")}
+				</Text>
 				<Text className="mt-2 font-display text-2xl text-ink-primary">{t("settings.locationTitle")}</Text>
 				<Text className="mt-1 font-body text-base text-ink-muted">{t("settings.locationAddress")}</Text>
 				<Pressable
@@ -93,10 +109,50 @@ export const SettingsPanel = () => {
 
 			<View className="mt-6 flex-row items-start rounded-2xl border border-line bg-cream-deep p-4">
 				<Ionicons name="information-circle-outline" size={20} color={theme.accent} />
-				<Text className="ml-3 flex-1 font-body text-sm leading-5 text-ink-muted">{t("settings.recreationNote")}</Text>
+				<Text className="ml-3 flex-1 font-body text-sm leading-5 text-ink-muted">
+					{t("settings.recreationNote")}
+				</Text>
 			</View>
 
+			<SectionHeader title={t("settings.deleteHeading")} />
+			<Pressable
+				accessibilityRole="button"
+				onPress={openConfirm}
+				className="rounded-2xl border border-line bg-cream px-4 py-4 active:opacity-80"
+			>
+				<Text className="font-body-semibold text-base text-red">{t("settings.deleteLabel")}</Text>
+				<Text className="mt-1 font-body text-sm text-ink-muted">{t("settings.deleteHint")}</Text>
+			</Pressable>
+
 			<Text className="mt-6 mb-4 text-center font-body text-xs text-ink-muted">{t("settings.footer")}</Text>
+
+			<Modal visible={confirmVisible} transparent animationType="fade" onRequestClose={closeConfirm}>
+				<Pressable className="flex-1 items-center justify-center bg-ink-primary/40 px-6" onPress={closeConfirm}>
+					<Pressable
+						className="w-full rounded-3xl bg-cream p-5"
+						onPress={(event) => event.stopPropagation()}
+					>
+						<Text className="font-display text-2xl text-ink-primary">{t("settings.deleteConfirmTitle")}</Text>
+						<Text className="mt-3 font-body text-base leading-6 text-ink-muted">
+							{t("settings.deleteConfirmBody")}
+						</Text>
+						<View className="mt-6 gap-3">
+							{deleteMutation.isPending ? (
+								<ActivityIndicator color={theme.accent} />
+							) : (
+								<>
+									<Button label={t("settings.deleteConfirm")} onPress={onConfirmDelete} />
+									<Button
+										label={t("settings.deleteCancel")}
+										onPress={closeConfirm}
+										variant="secondary"
+									/>
+								</>
+							)}
+						</View>
+					</Pressable>
+				</Pressable>
+			</Modal>
 		</Screen>
 	);
 };

@@ -1,10 +1,14 @@
 import Constants from "expo-constants";
-import { createContext, type ReactNode, useContext, useEffect, useState } from "react";
+import { createContext, type ReactNode, useCallback, useContext, useEffect, useState } from "react";
 
 import { fetchBootstrap, registerDevice } from "@/api";
 import type { Bootstrap } from "@/interface";
 import { sampleClockOffset, type ClockSyncResult } from "@/utils/clock-sync";
-import { loadOrCreateDeviceIdentity, type DeviceIdentity } from "@/utils/device-identity";
+import {
+	clearDeviceIdentity,
+	loadOrCreateDeviceIdentity,
+	type DeviceIdentity,
+} from "@/utils/device-identity";
 
 type DeviceContextValue = {
 	identity: DeviceIdentity | null;
@@ -14,6 +18,7 @@ type DeviceContextValue = {
 	isOnline: boolean;
 	error: string | null;
 	refreshBootstrap: () => Promise<void>;
+	resetInstallation: () => Promise<void>;
 };
 
 const DeviceContext = createContext<DeviceContextValue | null>(null);
@@ -26,7 +31,7 @@ export const DeviceProvider = ({ children }: { children: ReactNode }) => {
 	const [isOnline, setIsOnline] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
-	const refreshBootstrap = async (): Promise<void> => {
+	const refreshBootstrap = useCallback(async (): Promise<void> => {
 		const current = identity ?? (await loadOrCreateDeviceIdentity());
 		if (!identity) {
 			setIdentity(current);
@@ -34,12 +39,36 @@ export const DeviceProvider = ({ children }: { children: ReactNode }) => {
 
 		const appVersion = Constants.expoConfig?.version ?? "1.0.0";
 		await registerDevice(current, appVersion);
-		const [nextBootstrap, nextClock] = await Promise.all([fetchBootstrap(current), sampleClockOffset()]);
+		const [nextBootstrap, nextClock] = await Promise.all([
+			fetchBootstrap(current),
+			sampleClockOffset(),
+		]);
 		setBootstrap(nextBootstrap);
 		setClockSync(nextClock);
 		setIsOnline(true);
 		setError(null);
-	};
+	}, [identity]);
+
+	const resetInstallation = useCallback(async (): Promise<void> => {
+		await clearDeviceIdentity();
+		setIdentity(null);
+		setBootstrap(null);
+		setClockSync(null);
+		setError(null);
+
+		const next = await loadOrCreateDeviceIdentity();
+		setIdentity(next);
+		const appVersion = Constants.expoConfig?.version ?? "1.0.0";
+		await registerDevice(next, appVersion);
+		const [nextBootstrap, nextClock] = await Promise.all([
+			fetchBootstrap(next),
+			sampleClockOffset(),
+		]);
+		setBootstrap(nextBootstrap);
+		setClockSync(nextClock);
+		setIsOnline(true);
+		setError(null);
+	}, []);
 
 	useEffect(() => {
 		let cancelled = false;
@@ -54,7 +83,10 @@ export const DeviceProvider = ({ children }: { children: ReactNode }) => {
 
 				const appVersion = Constants.expoConfig?.version ?? "1.0.0";
 				await registerDevice(current, appVersion);
-				const [nextBootstrap, nextClock] = await Promise.all([fetchBootstrap(current), sampleClockOffset()]);
+				const [nextBootstrap, nextClock] = await Promise.all([
+					fetchBootstrap(current),
+					sampleClockOffset(),
+				]);
 				if (cancelled) {
 					return;
 				}
@@ -92,6 +124,7 @@ export const DeviceProvider = ({ children }: { children: ReactNode }) => {
 				isOnline,
 				error,
 				refreshBootstrap,
+				resetInstallation,
 			}}
 		>
 			{children}

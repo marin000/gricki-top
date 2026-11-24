@@ -1,3 +1,4 @@
+export { deleteDeviceAccount } from "./account";
 export { buildBootstrap } from "./bootstrap";
 export { isDailyStoryPublished, isMainStoryAvailable, isStoryAvailable } from "./content-access";
 export { resetContentSchedule } from "./content-reset";

@@ -1,6 +1,7 @@
 import { Router } from "express";
 
 import {
+	deleteMe,
 	getBootstrap,
 	getHealth,
 	getProgress,
@@ -116,3 +117,4 @@ router.patch(
 	validateRequest,
 	patchSettings,
 );
+router.delete("/v1/me", deleteMe);

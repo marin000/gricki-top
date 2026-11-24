@@ -12,7 +12,7 @@ export type CachedStoriesPayload = {
 
 export type OutboxItem = {
 	id: string;
-	type: "story-progress" | "settings";
+	type: "story-progress" | "settings" | "timing";
 	payload: Record<string, unknown>;
 	createdAt: string;
 };
@@ -65,4 +65,16 @@ export const enqueueOutbox = async (item: Omit<OutboxItem, "createdAt">): Promis
 	const current = await readOutbox();
 	const next = [...current, { ...item, createdAt: new Date().toISOString() }];
 	await AsyncStorage.setItem(OUTBOX_KEY, JSON.stringify(next));
+};
+
+export const writeOutbox = async (items: OutboxItem[]): Promise<void> => {
+	await AsyncStorage.setItem(OUTBOX_KEY, JSON.stringify(items));
+};
+
+export const clearLocalAppData = async (): Promise<void> => {
+	const keys = await AsyncStorage.getAllKeys();
+	const grickiKeys = keys.filter((key) => key.startsWith("gricki."));
+	if (grickiKeys.length > 0) {
+		await AsyncStorage.multiRemove(grickiKeys);
+	}
 };

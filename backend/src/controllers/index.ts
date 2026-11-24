@@ -1,3 +1,4 @@
+export { deleteMe } from "./account";
 export { getBootstrap } from "./bootstrap";
 export { postDeviceRegister } from "./devices";
 export { getHealth } from "./health";
