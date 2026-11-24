@@ -17,6 +17,7 @@ import {
 	msUntil,
 	TIMING_WINDOW_MS,
 } from "@/utils/noon";
+import { enqueueOutbox } from "@/utils/storage";
 
 import { useCannonFx } from "./use-cannon-fx";
 import { useServerNow } from "./use-server-now";
@@ -199,9 +200,19 @@ export const useTopExperience = () => {
 		} catch (error) {
 			if (error instanceof ApiError && error.status === 409 && error.code === "TIMING_ALREADY_RECORDED") {
 				setTimingError("Današnji pokušaj je već zabilježen.");
-			} else if (isOnline) {
-				setTimingError(error instanceof Error ? error.message : "Slanje nije uspjelo.");
 			} else {
+				await enqueueOutbox({
+					id: clientAttemptId,
+					type: "timing",
+					payload: {
+						localDate,
+						clientAttemptId,
+						estimatedTapAt: new Date(estimatedTapMs).toISOString(),
+						syncStatus: "unverified",
+						clockRttMs: rttMs ?? null,
+						appVersion,
+					},
+				});
 				setTimingResult({
 					id: clientAttemptId,
 					localDate,
@@ -215,6 +226,9 @@ export const useTopExperience = () => {
 					label,
 				});
 				setSheetEligible(true);
+				if (isOnline) {
+					setTimingError(error instanceof Error ? error.message : "Slanje nije uspjelo.");
+				}
 			}
 		} finally {
 			setIsSubmitting(false);

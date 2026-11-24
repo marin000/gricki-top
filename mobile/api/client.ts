@@ -14,14 +14,31 @@ type RequestOptions = {
 export class ApiError extends Error {
 	status: number;
 	code?: string;
+	retryAfterSec?: number;
 
-	constructor(message: string, status: number, code?: string) {
+	constructor(message: string, status: number, code?: string, retryAfterSec?: number) {
 		super(message);
 		this.name = "ApiError";
 		this.status = status;
 		this.code = code;
+		this.retryAfterSec = retryAfterSec;
 	}
 }
+
+const parseRetryAfterSec = (header: string | null): number | undefined => {
+	if (!header) {
+		return undefined;
+	}
+	const asNumber = Number(header);
+	if (Number.isFinite(asNumber) && asNumber >= 0) {
+		return Math.ceil(asNumber);
+	}
+	const asDate = Date.parse(header);
+	if (Number.isFinite(asDate)) {
+		return Math.max(0, Math.ceil((asDate - Date.now()) / 1000));
+	}
+	return undefined;
+};
 
 export const apiRequest = async <T>(
 	path: string,
@@ -57,7 +74,12 @@ export const apiRequest = async <T>(
 		} catch {
 			// ignore parse errors
 		}
-		throw new ApiError(message, response.status, code);
+		throw new ApiError(
+			message,
+			response.status,
+			code,
+			parseRetryAfterSec(response.headers.get("Retry-After")),
+		);
 	}
 
 	if (response.status === 204) {
