@@ -15,8 +15,10 @@
 	},
 	"stories": {
 		"title": "Zanimljivosti",
-		"empty": "Arhiva priča bit će dostupna nakon seedanja i Faze 3."
+		"empty": "Još nema objavljenih priča.",
+		"loadError": "Ne mogu učitati priče."
 	},
+
 	"results": {
 		"title": "Rezultati",
 		"empty": "Osobni timing i kviz rezultati stižu u kasnijim fazama."

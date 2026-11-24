@@ -3,11 +3,17 @@ import { createContext, type ReactNode, useContext, useEffect, useState } from "
 
 import { fetchBootstrap, registerDevice } from "@/api";
 import type { Bootstrap } from "@/interface";
-import { loadOrCreateDeviceIdentity, type DeviceIdentity } from "@/utils";
+import {
+	loadOrCreateDeviceIdentity,
+	sampleClockOffset,
+	type ClockSyncResult,
+	type DeviceIdentity,
+} from "@/utils";
 
 type DeviceContextValue = {
 	identity: DeviceIdentity | null;
 	bootstrap: Bootstrap | null;
+	clockSync: ClockSyncResult | null;
 	isReady: boolean;
 	isOnline: boolean;
 	error: string | null;
@@ -19,6 +25,7 @@ const DeviceContext = createContext<DeviceContextValue | null>(null);
 export const DeviceProvider = ({ children }: { children: ReactNode }) => {
 	const [identity, setIdentity] = useState<DeviceIdentity | null>(null);
 	const [bootstrap, setBootstrap] = useState<Bootstrap | null>(null);
+	const [clockSync, setClockSync] = useState<ClockSyncResult | null>(null);
 	const [isReady, setIsReady] = useState(false);
 	const [isOnline, setIsOnline] = useState(true);
 	const [error, setError] = useState<string | null>(null);
@@ -31,8 +38,9 @@ export const DeviceProvider = ({ children }: { children: ReactNode }) => {
 
 		const appVersion = Constants.expoConfig?.version ?? "1.0.0";
 		await registerDevice(current, appVersion);
-		const nextBootstrap = await fetchBootstrap(current);
+		const [nextBootstrap, nextClock] = await Promise.all([fetchBootstrap(current), sampleClockOffset()]);
 		setBootstrap(nextBootstrap);
+		setClockSync(nextClock);
 		setIsOnline(true);
 		setError(null);
 	};
@@ -50,11 +58,12 @@ export const DeviceProvider = ({ children }: { children: ReactNode }) => {
 
 				const appVersion = Constants.expoConfig?.version ?? "1.0.0";
 				await registerDevice(current, appVersion);
-				const nextBootstrap = await fetchBootstrap(current);
+				const [nextBootstrap, nextClock] = await Promise.all([fetchBootstrap(current), sampleClockOffset()]);
 				if (cancelled) {
 					return;
 				}
 				setBootstrap(nextBootstrap);
+				setClockSync(nextClock);
 				setIsOnline(true);
 				setError(null);
 			} catch (bootError) {
@@ -82,6 +91,7 @@ export const DeviceProvider = ({ children }: { children: ReactNode }) => {
 			value={{
 				identity,
 				bootstrap,
+				clockSync,
 				isReady,
 				isOnline,
 				error,
