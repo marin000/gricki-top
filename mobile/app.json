@@ -51,7 +51,6 @@
         }
       ],
       "expo-av",
-      "expo-keep-awake",
       [
         "expo-build-properties",
         {
