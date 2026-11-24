@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+
+# Environment / secrets
+.env
+.env*.local
+
+# Builds / caches
+dist/
+.expo/
+web-build/
+*.tsbuildinfo
+coverage/
+tmp/
+
+# Native
+mobile/ios/
+mobile/android/
+.kotlin/
+
+# Logs / OS
+logs/
+*.log
+.DS_Store
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Metro
+.metro-health-check*
+
+# Never commit local design / package / structure docs
+dizajn/
+Gricki_top/
+PROJECT_STRUCTURE.md
