@@ -14,7 +14,7 @@ export const Button = ({ label, onPress, variant = "primary", disabled = false, 
 		variant === "primary"
 			? "bg-blue"
 			: variant === "secondary"
-				? "bg-cream-deep"
+				? "bg-cream-deep border border-blue"
 				: "bg-transparent border border-line";
 
 	const textClass = variant === "primary" ? "text-ink-inverse" : "text-ink-primary";
@@ -24,12 +24,19 @@ export const Button = ({ label, onPress, variant = "primary", disabled = false, 
 			accessibilityRole="button"
 			disabled={disabled}
 			onPress={onPress}
-			className={`flex-row items-center justify-center rounded-xl px-4 py-3 ${variantClass} ${
+			className={`min-h-[48px] flex-row items-center justify-center rounded-xl px-3 py-3 ${variantClass} ${
 				disabled ? "opacity-50" : "active:opacity-80"
 			}`}
 		>
 			{icon}
-			<Text className={`font-body-semibold text-base ${textClass} ${icon ? "ml-2" : ""}`}>{label}</Text>
+			<Text
+				numberOfLines={1}
+				adjustsFontSizeToFit
+				minimumFontScale={0.85}
+				className={`font-body-semibold text-base ${textClass} ${icon ? "ml-2" : ""}`}
+			>
+				{label}
+			</Text>
 		</Pressable>
 	);
 };

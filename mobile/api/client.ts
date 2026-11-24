@@ -1,4 +1,8 @@
-import { apiBaseUrl, authorizationHeader, type DeviceIdentity } from "@/utils";
+import { apiBaseUrl } from "@/utils/config";
+import {
+	authorizationHeader,
+	type DeviceIdentity,
+} from "@/utils/device-identity";
 
 type RequestOptions = {
 	method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -19,7 +23,10 @@ export class ApiError extends Error {
 	}
 }
 
-export const apiRequest = async <T>(path: string, options: RequestOptions = {}): Promise<T> => {
+export const apiRequest = async <T>(
+	path: string,
+	options: RequestOptions = {},
+): Promise<T> => {
 	const headers: Record<string, string> = {
 		Accept: "application/json",
 	};
@@ -42,7 +49,9 @@ export const apiRequest = async <T>(path: string, options: RequestOptions = {}):
 		let code: string | undefined;
 		let message = `HTTP ${response.status}`;
 		try {
-			const payload = (await response.json()) as { error?: { code?: string; message?: string } };
+			const payload = (await response.json()) as {
+				error?: { code?: string; message?: string };
+			};
 			code = payload.error?.code;
 			message = payload.error?.message ?? message;
 		} catch {

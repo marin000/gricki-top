@@ -3,12 +3,8 @@ import { createContext, type ReactNode, useContext, useEffect, useState } from "
 
 import { fetchBootstrap, registerDevice } from "@/api";
 import type { Bootstrap } from "@/interface";
-import {
-	loadOrCreateDeviceIdentity,
-	sampleClockOffset,
-	type ClockSyncResult,
-	type DeviceIdentity,
-} from "@/utils";
+import { sampleClockOffset, type ClockSyncResult } from "@/utils/clock-sync";
+import { loadOrCreateDeviceIdentity, type DeviceIdentity } from "@/utils/device-identity";
 
 type DeviceContextValue = {
 	identity: DeviceIdentity | null;

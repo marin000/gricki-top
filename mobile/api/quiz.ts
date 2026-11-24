@@ -7,7 +7,7 @@ import {
 	type QuizResult,
 	type QuizResultsList,
 } from "@/interface";
-import type { DeviceIdentity } from "@/utils";
+import type { DeviceIdentity } from "@/utils/device-identity";
 
 import { apiRequest } from "./client";
 

@@ -1,9 +1,10 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 
-import { Button } from "@/components";
 import { theme } from "@/constants";
 import type { StorySummary } from "@/interface";
+
+import { StoryMotif } from "./story-motif";
 
 type TodayStoryCardProps = {
 	story: StorySummary | null;
@@ -12,30 +13,55 @@ type TodayStoryCardProps = {
 };
 
 export const TodayStoryCard = ({ story, locked, onRead }: TodayStoryCardProps) => {
+	const disabled = locked || !story;
+
 	return (
-		<View className="mt-6 overflow-hidden rounded-3xl border border-line bg-cream">
-			<View className="h-36 items-center justify-center bg-blue-pale">
-				<Ionicons name="book" size={42} color={theme.tint} />
-			</View>
-			<View className="p-5">
-				<Text className="font-body-semibold text-xs uppercase tracking-widest text-red">
-					{locked ? "Otključava se u 12:00" : "Današnja priča"}
-				</Text>
-				<Text className="mt-2 font-display text-3xl text-ink-primary">
-					{locked || !story ? "Nova priča čeka podne" : story.title}
-				</Text>
-				<Text className="mt-2 font-body text-base leading-6 text-ink-muted">
-					{locked || !story ? "Vrati se nakon pucnja Gričkog topa." : story.lead}
-				</Text>
-				<View className="mt-4">
-					<Button
-						label={locked ? "Zaključano" : "Pročitaj priču"}
-						onPress={onRead}
-						disabled={locked || !story}
-						icon={locked ? <Ionicons name="lock-closed" size={16} color={theme.textInverse} /> : undefined}
-					/>
+		<Pressable
+			accessibilityRole="button"
+			accessibilityState={{ disabled }}
+			disabled={disabled}
+			onPress={onRead}
+			className={`mt-6 overflow-hidden rounded-2xl border border-line ${
+				disabled ? "opacity-90" : "active:opacity-90"
+			}`}
+		>
+			<View className="flex-row">
+				<View className="h-[168px] w-[42%] items-center justify-center bg-metal-light px-2">
+					<StoryMotif category={story?.category} />
+				</View>
+				<View className="h-[168px] flex-1 justify-between bg-blue px-4 py-4">
+					<View>
+						<Text className="font-body-semibold text-[10px] uppercase tracking-[0.14em] text-metal-light">
+							{locked ? "Otključava se u 12:00" : "Današnja priča"}
+						</Text>
+						<Text
+							className="mt-2 font-display text-2xl leading-7 text-ink-inverse"
+							numberOfLines={3}
+						>
+							{locked || !story ? "Nova priča čeka podne" : story.title}
+						</Text>
+						<Text className="mt-2 font-body text-sm leading-5 text-blue-pale" numberOfLines={2}>
+							{locked || !story
+								? "Vrati se nakon pucnja Gričkog topa."
+								: story.lead}
+						</Text>
+					</View>
+					<View className="flex-row items-center self-start">
+						{locked ? (
+							<>
+								<Ionicons name="lock-closed" size={14} color={theme.paper} />
+								<Text className="ml-1 font-body-semibold text-sm text-ink-inverse">
+									Zaključano
+								</Text>
+							</>
+						) : (
+							<Text className="font-body-semibold text-sm text-metal-light underline">
+								Pročitaj priču
+							</Text>
+						)}
+					</View>
 				</View>
 			</View>
-		</View>
+		</Pressable>
 	);
 };

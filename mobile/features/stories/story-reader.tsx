@@ -7,6 +7,8 @@ import { Button, EmptyState, Screen } from "@/components";
 import { theme } from "@/constants";
 import { useStory } from "@/hooks";
 
+import { StoryHeroBanner } from "./story-hero-banner";
+
 type StoryReaderProps = {
 	storyId: string;
 };
@@ -53,9 +55,7 @@ export const StoryReader = ({ storyId }: StoryReaderProps) => {
 				<Text className="font-body-semibold text-sm text-blue">{t("stories.readerBadge")}</Text>
 			</View>
 
-			<View className="mt-4 h-40 items-center justify-center bg-blue-pale">
-				<Ionicons name="library-outline" size={48} color={theme.tint} />
-			</View>
+			<StoryHeroBanner />
 
 			<View className="px-5 pb-10 pt-6">
 				<Text className="font-body-semibold text-xs uppercase tracking-widest text-red">{story.category}</Text>

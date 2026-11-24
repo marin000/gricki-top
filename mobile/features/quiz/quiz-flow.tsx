@@ -1,14 +1,10 @@
-import * as Crypto from "expo-crypto";
 import { router } from "expo-router";
-import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 
-import { fetchQuizResult, startQuizAttempt, submitQuizAnswer } from "@/api";
 import { Button, EmptyState, Screen } from "@/components";
 import { theme } from "@/constants";
-import { useDevice } from "@/context";
-import type { QuizAttempt, QuizResult } from "@/interface";
+import { useQuizFlow } from "@/hooks";
 
 import { FunicularResult } from "./funicular-result";
 
@@ -18,80 +14,21 @@ type QuizFlowProps = {
 
 export const QuizFlow = ({ quizId }: QuizFlowProps) => {
 	const { t } = useTranslation();
-	const { identity } = useDevice();
-	const [attempt, setAttempt] = useState<QuizAttempt | null>(null);
-	const [result, setResult] = useState<QuizResult | null>(null);
-	const [selected, setSelected] = useState<"A" | "B" | "C" | "D" | null>(null);
-	const [feedback, setFeedback] = useState<QuizAttempt["confirmedAnswers"][number] | null>(null);
-	const [pending, setPending] = useState(false);
-	const [error, setError] = useState<string | null>(null);
-	const [loading, setLoading] = useState(true);
-
-	useEffect(() => {
-		let cancelled = false;
-		const boot = async () => {
-			if (!identity) {
-				return;
-			}
-			try {
-				const next = await startQuizAttempt(identity, quizId);
-				if (cancelled) {
-					return;
-				}
-				setAttempt(next);
-				if (next.status === "completed") {
-					const completed = await fetchQuizResult(identity, next.id);
-					if (!cancelled) {
-						setResult(completed);
-					}
-				}
-			} catch {
-				if (!cancelled) {
-					setError(t("quiz.loadError"));
-				}
-			} finally {
-				if (!cancelled) {
-					setLoading(false);
-				}
-			}
-		};
-		void boot();
-		return () => {
-			cancelled = true;
-		};
-	}, [identity, quizId, t]);
-
-	const confirm = async () => {
-		if (!identity || !attempt || !attempt.currentQuestion || !selected || pending) {
-			return;
-		}
-		setPending(true);
-		setError(null);
-		const clientRequestId = Crypto.randomUUID();
-		try {
-			const response = await submitQuizAnswer(identity, attempt.id, {
-				questionId: attempt.currentQuestion.questionId,
-				selectedOptionId: selected,
-				clientRequestId,
-				expectedRevision: attempt.revision,
-			});
-			setFeedback(response.feedback);
-			setAttempt(response.attempt);
-			if (response.attempt.status === "completed") {
-				const completed = await fetchQuizResult(identity, response.attempt.id);
-				setResult(completed);
-			}
-		} catch {
-			setError(t("quiz.submitError"));
-		} finally {
-			setPending(false);
-		}
-	};
-
-	const goNext = () => {
-		setSelected(null);
-		setFeedback(null);
-	};
+	const {
+		attempt,
+		result,
+		selected,
+		feedback,
+		pending,
+		error,
+		loading,
+		question,
+		questionNumber,
+		primaryLabelKey,
+		isPrimaryDisabled,
+		handleSelectOption,
+		handlePrimaryAction,
+	} = useQuizFlow(quizId);
 
 	if (loading) {
 		return (
@@ -117,11 +54,6 @@ export const QuizFlow = ({ quizId }: QuizFlowProps) => {
 			</Screen>
 		);
 	}
-
-	const question = attempt?.currentQuestion;
-	const questionNumber = feedback
-		? attempt?.confirmedAnswers.length ?? 1
-		: (attempt?.nextQuestionIndex ?? 0) + 1;
 
 	return (
 		<Screen scroll>
@@ -150,7 +82,7 @@ export const QuizFlow = ({ quizId }: QuizFlowProps) => {
 						{question.options.map((option) => {
 							const isSelected = selected === option.id;
 							const isCorrect = feedback?.correctOptionId === option.id;
-							const isWrong = feedback && feedback.selectedOptionId === option.id && !feedback.isCorrect;
+							const isWrong = Boolean(feedback && feedback.selectedOptionId === option.id && !feedback.isCorrect);
 							const stateClass = feedback
 								? isCorrect
 									? "border-blue bg-blue-pale"
@@ -165,7 +97,7 @@ export const QuizFlow = ({ quizId }: QuizFlowProps) => {
 								<Pressable
 									key={option.id}
 									disabled={Boolean(feedback) || pending}
-									onPress={() => setSelected(option.id)}
+									onPress={() => handleSelectOption(option.id)}
 									className={`flex-row items-center rounded-2xl border px-4 py-3 ${stateClass}`}
 								>
 									<Text className="mr-3 font-display text-xl text-blue">{option.id}</Text>
@@ -190,25 +122,9 @@ export const QuizFlow = ({ quizId }: QuizFlowProps) => {
 
 			<View className="mt-8">
 				<Button
-					label={
-						feedback
-							? attempt?.status === "completed" || questionNumber >= 5
-								? t("quiz.seeResult")
-								: t("quiz.next")
-							: t("quiz.confirm")
-					}
-					onPress={() => {
-						if (feedback) {
-							if (attempt?.status === "completed" && identity) {
-								void fetchQuizResult(identity, attempt.id).then(setResult);
-								return;
-							}
-							goNext();
-							return;
-						}
-						void confirm();
-					}}
-					disabled={(!feedback && !selected) || pending}
+					label={t(primaryLabelKey)}
+					onPress={() => void handlePrimaryAction()}
+					disabled={isPrimaryDisabled}
 				/>
 			</View>
 		</Screen>

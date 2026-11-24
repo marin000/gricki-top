@@ -11,7 +11,7 @@ import "react-native-reanimated";
 import { AppLifecycle, BootstrapGate } from "@/components";
 import { theme } from "@/constants";
 import { DeviceProvider } from "@/context";
-import { useRootLayoutState } from "@/hooks";
+import { useRootLayoutState } from "@/hooks/use-root-layout-state";
 
 export { ErrorBoundary } from "expo-router";
 

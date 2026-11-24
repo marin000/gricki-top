@@ -1,5 +1,5 @@
-import { Ionicons } from "@expo/vector-icons";
 import { Pressable, Text, View } from "react-native";
+import Svg, { Path } from "react-native-svg";
 
 import { theme } from "@/constants";
 import type { StorySummary } from "@/interface";
@@ -9,27 +9,43 @@ type StoryArchiveRowProps = {
 	indexLabel: string;
 	onPress: () => void;
 	read?: boolean;
+	kicker?: string;
 };
 
-export const StoryArchiveRow = ({ story, indexLabel, onPress, read = false }: StoryArchiveRowProps) => {
+export const StoryArchiveRow = ({
+	story,
+	indexLabel,
+	onPress,
+	read = false,
+	kicker,
+}: StoryArchiveRowProps) => {
+	const label =
+		kicker ??
+		`${story.category}${read ? " · Pročitano" : ""}`;
+
 	return (
 		<Pressable
 			accessibilityRole="button"
 			onPress={onPress}
-			className="mb-2 flex-row items-center rounded-2xl border border-line bg-cream px-4 py-3 active:opacity-80"
+			className="flex-row items-center border-b border-line py-4 active:opacity-80"
 		>
-			<Text className="w-10 font-display text-xl text-blue">{indexLabel}</Text>
+			<Text className="w-10 font-display text-xl text-red">{indexLabel}</Text>
 			<View className="flex-1 pr-2">
-				<Text className="font-body text-xs text-ink-muted">
-					Dan {story.dayNumber}
-					{read ? " · Pročitano" : ""}
-					{` · ${story.category}`}
+				<Text className="font-body-semibold text-[10px] uppercase tracking-[0.12em] text-ink-muted">
+					{label}
 				</Text>
 				<Text className="mt-1 font-display text-xl text-ink-primary" numberOfLines={2}>
 					{story.title}
 				</Text>
 			</View>
-			<Ionicons name="chevron-forward" size={18} color={theme.textMuted} />
+			<Svg width={18} height={18} viewBox="0 0 24 24" fill="none">
+				<Path
+					d="m9 5 7 7-7 7"
+					stroke={theme.textMuted}
+					strokeWidth={1.7}
+					strokeLinecap="round"
+				/>
+			</Svg>
 		</Pressable>
 	);
 };

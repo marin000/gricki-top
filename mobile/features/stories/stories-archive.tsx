@@ -1,8 +1,8 @@
 import { router } from "expo-router";
-import { ActivityIndicator, View } from "react-native";
 import { useTranslation } from "react-i18next";
+import { ActivityIndicator, Text, View } from "react-native";
 
-import { EmptyState, PageHeader, Screen, SectionHeader } from "@/components";
+import { AppHeader, EmptyState, Screen } from "@/components";
 import { theme } from "@/constants";
 import { useDevice } from "@/context";
 import { useStories } from "@/hooks";
@@ -26,14 +26,22 @@ export const StoriesArchive = () => {
 
 	return (
 		<Screen scroll>
-			<PageHeader
-				eyebrow={t("stories.eyebrow")}
-				title={t("stories.headline")}
-				subtitle={t("stories.subtitle")}
-			/>
+			<AppHeader eyebrow={t("stories.headerEyebrow")} />
+
+			<View className="mt-5">
+				<Text className="font-body-semibold text-[10px] uppercase tracking-[0.17em] text-red">
+					{t("stories.eyebrow")}
+				</Text>
+				<Text className="mt-2 font-display text-3xl leading-9 text-ink-primary">
+					{t("stories.headline")}
+				</Text>
+				<Text className="mt-3 font-body text-base leading-6 text-ink-muted">
+					{t("stories.subtitle")}
+				</Text>
+			</View>
 
 			{storiesQuery.isLoading && items.length === 0 ? (
-				<View className="py-12 items-center">
+				<View className="items-center py-12">
 					<ActivityIndicator color={theme.tint} />
 				</View>
 			) : null}
@@ -55,16 +63,18 @@ export const StoriesArchive = () => {
 				}}
 			/>
 
-			<SectionHeader
-				title={t("stories.archiveHeading")}
-				meta={
-					archive.length > 0
+			<View className="mt-8 min-h-[38px] flex-row items-center justify-between border-b border-line">
+				<Text className="font-body-semibold text-[9px] uppercase tracking-[0.16em] text-ink-muted">
+					{t("stories.archiveHeading")}
+				</Text>
+				<Text className="font-body-semibold text-[9px] uppercase tracking-[0.12em] text-ink-muted">
+					{archive.length > 0
 						? t("stories.archiveCount", { count: archive.length })
 						: bootstrap?.latestPublishedDay
-							? undefined
-							: undefined
-				}
-			/>
+							? t("stories.archiveCount", { count: Math.max(0, bootstrap.latestPublishedDay - 1) })
+							: ""}
+				</Text>
+			</View>
 
 			{archive.length === 0 && !storiesQuery.isLoading ? (
 				<EmptyState title={t("stories.archiveEmpty")} />
@@ -75,6 +85,11 @@ export const StoriesArchive = () => {
 					key={story.id}
 					story={story}
 					indexLabel={String(index + 1).padStart(2, "0")}
+					kicker={
+						index === 0
+							? t("stories.yesterdayKicker")
+							: `${t("stories.dayLabel", { day: story.dayNumber })} · ${story.category}`
+					}
 					onPress={() => openStory(story.id)}
 				/>
 			))}
