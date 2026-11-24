@@ -11,6 +11,8 @@
 		"format": "biome format .",
 		"format-fix": "biome check --write .",
 		"typecheck": "tsc --noEmit",
+		"test": "vitest run",
+		"test:watch": "vitest",
 		"content:validate": "tsx scripts/content-validate.ts",
 		"content:seed": "tsx scripts/content-seed.ts",
 		"content:reset-schedule": "tsx scripts/content-reset-schedule.ts"
@@ -32,6 +34,7 @@
 		"@types/node": "^22.13.10",
 		"@types/uuid": "^10.0.0",
 		"tsx": "^4.19.3",
-		"typescript": "^5.8.2"
+		"typescript": "^5.8.2",
+		"vitest": "^3.2.4"
 	}
 }
