@@ -24,4 +24,9 @@ export const config = {
 	timezone: getEnv("CONTENT_TIMEZONE", "Europe/Zagreb"),
 	logLevel: getEnv("LOG_LEVEL", "info"),
 	version: "1.0.0",
+	rateLimit: {
+		registerPerHour: Number(getEnv("RATE_LIMIT_REGISTER_PER_HOUR", "10")),
+		readPerMinute: Number(getEnv("RATE_LIMIT_READ_PER_MINUTE", "120")),
+		answersPerMinute: Number(getEnv("RATE_LIMIT_ANSWERS_PER_MINUTE", "30")),
+	},
 } as const;
