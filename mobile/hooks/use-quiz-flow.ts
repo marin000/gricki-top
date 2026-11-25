@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import * as Crypto from "expo-crypto";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -12,6 +13,7 @@ type AnswerFeedback = QuizAttempt["confirmedAnswers"][number];
 export const useQuizFlow = (quizId: string) => {
 	const { t } = useTranslation();
 	const { identity } = useDevice();
+	const queryClient = useQueryClient();
 	const [attempt, setAttempt] = useState<QuizAttempt | null>(null);
 	const [result, setResult] = useState<QuizResult | null>(null);
 	const [selected, setSelected] = useState<OptionId | null>(null);
@@ -19,6 +21,15 @@ export const useQuizFlow = (quizId: string) => {
 	const [pending, setPending] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [loading, setLoading] = useState(true);
+
+	const refreshStoryQuizState = async () => {
+		await Promise.all([
+			queryClient.invalidateQueries({ queryKey: ["story"] }),
+			queryClient.invalidateQueries({
+				queryKey: ["progress", identity?.deviceId],
+			}),
+		]);
+	};
 
 	useEffect(() => {
 		let cancelled = false;
@@ -91,6 +102,7 @@ export const useQuizFlow = (quizId: string) => {
 			if (response.attempt.status === "completed") {
 				const completed = await fetchQuizResult(identity, response.attempt.id);
 				setResult(completed);
+				await refreshStoryQuizState();
 			}
 		} catch {
 			setError(t("quiz.submitError"));
@@ -109,6 +121,7 @@ export const useQuizFlow = (quizId: string) => {
 			if (attempt?.status === "completed" && identity) {
 				const completed = await fetchQuizResult(identity, attempt.id);
 				setResult(completed);
+				await refreshStoryQuizState();
 				return;
 			}
 			handleGoNext();
@@ -129,6 +142,8 @@ export const useQuizFlow = (quizId: string) => {
 
 	const isPrimaryDisabled = (!feedback && !selected) || pending;
 
+	const question = feedback ?? attempt?.currentQuestion ?? null;
+
 	return {
 		attempt,
 		result,
@@ -137,7 +152,7 @@ export const useQuizFlow = (quizId: string) => {
 		pending,
 		error,
 		loading,
-		question: attempt?.currentQuestion ?? null,
+		question,
 		questionNumber,
 		primaryLabelKey,
 		isPrimaryDisabled,

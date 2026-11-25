@@ -4,7 +4,14 @@ import { useTranslation } from "react-i18next";
 import { Pressable, Text, View } from "react-native";
 import Svg, { Circle, Path, Rect } from "react-native-svg";
 
-import { AppHeader, Button, CannonScene, CountdownClock, Screen, Toggle } from "@/components";
+import {
+	AppHeader,
+	Button,
+	CannonScene,
+	CountdownClock,
+	Screen,
+	Toggle,
+} from "@/components";
 import { theme } from "@/constants";
 import {
 	useDailyStorySheet,
@@ -17,22 +24,27 @@ import { TIMING_WINDOW_MS } from "@/utils/noon";
 import { CannonFireOverlay } from "./cannon-fire-overlay";
 import { ChallengeInfoModal } from "./challenge-info-modal";
 import { DailyStorySheet } from "./daily-story-sheet";
+import { ExperienceInfoModal } from "./experience-info-modal";
+
+const roundIconClassName = (filled: boolean, muted: boolean) => {
+	if (muted) {
+		return "h-11 w-11 items-center justify-center rounded-full border border-line bg-cream-deep";
+	}
+	if (filled) {
+		return "h-11 w-11 items-center justify-center rounded-full border border-red bg-red";
+	}
+	return "h-11 w-11 items-center justify-center rounded-full border border-blue bg-transparent";
+};
 
 const RoundIcon = ({
 	children,
 	filled = false,
+	muted = false,
 }: {
 	children: ReactNode;
 	filled?: boolean;
-}) => (
-	<View
-		className={`h-11 w-11 items-center justify-center rounded-full border ${
-			filled ? "border-red bg-red" : "border-blue bg-transparent"
-		}`}
-	>
-		{children}
-	</View>
-);
+	muted?: boolean;
+}) => <View className={roundIconClassName(filled, muted)}>{children}</View>;
 
 export const TopExperience = () => {
 	const { t } = useTranslation();
@@ -83,12 +95,14 @@ export const TopExperience = () => {
 
 				<Pressable
 					accessibilityRole="button"
-					onPress={() => void top.playDemo()}
+					onPress={top.openExperienceInfo}
 					className="flex-row items-center border-b border-line py-4 active:opacity-80"
 				>
 					<Text className="w-10 font-display text-xl text-red">01</Text>
 					<View className="flex-1 pr-3">
-						<Text className="font-display text-2xl text-ink-primary">{t("top.modeExperience")}</Text>
+						<Text className="font-display text-2xl text-ink-primary">
+							{t("top.modeExperience")}
+						</Text>
 						<Text className="mt-0.5 font-body text-sm text-ink-muted">
 							{t("top.modeExperienceHint")}
 						</Text>
@@ -113,15 +127,29 @@ export const TopExperience = () => {
 				>
 					<Text className="w-10 font-display text-xl text-red">02</Text>
 					<View className="flex-1 pr-3">
-						<Text className="font-display text-2xl text-ink-primary">{t("top.modeChallenge")}</Text>
+						<Text className="font-display text-2xl text-ink-primary">
+							{t("top.modeChallenge")}
+						</Text>
 						<Text className="mt-0.5 font-body text-sm text-ink-muted">
 							{t("top.modeChallengeHint")}
 						</Text>
 					</View>
 					<RoundIcon filled>
 						<Svg width={19} height={19} viewBox="0 0 24 24" fill="none">
-							<Circle cx="12" cy="12" r="8" stroke={theme.paper} strokeWidth={1.7} />
-							<Circle cx="12" cy="12" r="3.5" stroke={theme.paper} strokeWidth={1.7} />
+							<Circle
+								cx="12"
+								cy="12"
+								r="8"
+								stroke={theme.paper}
+								strokeWidth={1.7}
+							/>
+							<Circle
+								cx="12"
+								cy="12"
+								r="3.5"
+								stroke={theme.paper}
+								strokeWidth={1.7}
+							/>
 							<Path
 								d="M12 2V5M22 12h-3M12 22v-3M2 12h3"
 								stroke={theme.paper}
@@ -144,7 +172,9 @@ export const TopExperience = () => {
 			) : null}
 
 			{top.challengeAborted ? (
-				<Text className="mt-3 font-body text-sm text-red">{t("top.challengeAborted")}</Text>
+				<Text className="mt-3 font-body text-sm text-red">
+					{t("top.challengeAborted")}
+				</Text>
 			) : null}
 
 			{top.localDeltaLabel || top.timingResult ? (
@@ -156,7 +186,9 @@ export const TopExperience = () => {
 						{top.localDeltaLabel ?? top.timingResult?.label}
 					</Text>
 					{top.timingResult?.syncStatus === "unverified" ? (
-						<Text className="mt-2 font-body text-sm text-ink-muted">{t("top.unverified")}</Text>
+						<Text className="mt-2 font-body text-sm text-ink-muted">
+							{t("top.unverified")}
+						</Text>
 					) : null}
 					<View className="mt-3">
 						<Button
@@ -169,7 +201,9 @@ export const TopExperience = () => {
 			) : null}
 
 			{top.timingError ? (
-				<Text className="mt-3 font-body text-sm text-red">{top.timingError}</Text>
+				<Text className="mt-3 font-body text-sm text-red">
+					{top.timingError}
+				</Text>
 			) : null}
 
 			<Pressable
@@ -220,7 +254,10 @@ export const TopExperience = () => {
 					<Text className="font-body-semibold text-[10px] uppercase tracking-[0.14em] text-red">
 						{storyUnlocked ? t("top.dailyStoryLabel") : t("top.sheetEyebrow")}
 					</Text>
-					<Text className="mt-1 font-display text-xl text-ink-primary" numberOfLines={2}>
+					<Text
+						className="mt-1 font-display text-xl text-ink-primary"
+						numberOfLines={2}
+					>
 						{storyUnlocked && story ? story.title : t("top.dailyStoryLocked")}
 					</Text>
 				</View>
@@ -244,20 +281,28 @@ export const TopExperience = () => {
 							stroke={theme.tint}
 							strokeWidth={1.7}
 						/>
-						<Path d="M9.5 20a3 3 0 0 0 5 0" stroke={theme.tint} strokeWidth={1.7} />
+						<Path
+							d="M9.5 20a3 3 0 0 0 5 0"
+							stroke={theme.tint}
+							strokeWidth={1.7}
+						/>
 					</Svg>
 				</View>
 				<View className="flex-1 pr-3">
 					<Text className="font-body-semibold text-base text-ink-primary">
 						{t("top.reminderTitle")}
 					</Text>
-					<Text className="font-body text-sm text-ink-muted">{t("top.reminderHint")}</Text>
+					<Text className="font-body text-sm text-ink-muted">
+						{t("top.reminderHint")}
+					</Text>
 				</View>
 				<Toggle
 					checked={settings.reminderEnabled}
 					label={t("top.reminderTitle")}
 					disabled={patchMutation.isPending}
-					onChange={(reminderEnabled) => patchMutation.mutate({ reminderEnabled })}
+					onChange={(reminderEnabled) =>
+						patchMutation.mutate({ reminderEnabled })
+					}
 				/>
 			</View>
 
@@ -268,6 +313,12 @@ export const TopExperience = () => {
 				recoil={top.cannon.recoil}
 				flash={top.cannon.flash}
 				onClose={top.closeFireOverlay}
+			/>
+
+			<ExperienceInfoModal
+				visible={top.experienceInfoVisible}
+				noonPassed={top.noonPassed}
+				onClose={top.closeExperienceInfo}
 			/>
 
 			<ChallengeInfoModal

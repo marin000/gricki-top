@@ -1,7 +1,13 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { ActivityIndicator, Linking, Pressable, Text, View } from "react-native";
+import {
+	ActivityIndicator,
+	Linking,
+	Pressable,
+	Text,
+	View,
+} from "react-native";
 
 import { Button, EmptyState, Screen } from "@/components";
 import { theme } from "@/constants";
@@ -29,8 +35,15 @@ export const StoryReader = ({ storyId }: StoryReaderProps) => {
 	if (storyQuery.isError || !story) {
 		return (
 			<Screen>
-				<EmptyState title={t("stories.readerError")} description={t("stories.readerErrorHint")} />
-				<Button label={t("stories.back")} onPress={() => router.back()} variant="secondary" />
+				<EmptyState
+					title={t("stories.readerError")}
+					description={t("stories.readerErrorHint")}
+				/>
+				<Button
+					label={t("stories.back")}
+					onPress={() => router.back()}
+					variant="secondary"
+				/>
 			</Screen>
 		);
 	}
@@ -39,7 +52,6 @@ export const StoryReader = ({ storyId }: StoryReaderProps) => {
 
 	return (
 		<Screen scroll padded={false}>
-
 			<View className="flex-row items-center justify-between px-5 pt-2">
 				<Pressable
 					accessibilityRole="button"
@@ -50,27 +62,42 @@ export const StoryReader = ({ storyId }: StoryReaderProps) => {
 					<Ionicons name="arrow-back" size={20} color={theme.text} />
 				</Pressable>
 				<Text className="font-body text-sm text-ink-muted">
-					{story.dayNumber ? t("stories.dayLabel", { day: story.dayNumber }) : t("stories.mainLabel")}
+					{story.dayNumber
+						? t("stories.dayLabel", { day: story.dayNumber })
+						: t("stories.mainLabel")}
 				</Text>
-				<Text className="font-body-semibold text-sm text-blue">{t("stories.readerBadge")}</Text>
+				<Text className="font-body-semibold text-sm text-blue">
+					{t("stories.readerBadge")}
+				</Text>
 			</View>
 
 			<StoryHeroBanner />
 
 			<View className="px-5 pb-10 pt-6">
-				<Text className="font-body-semibold text-xs uppercase tracking-widest text-red">{story.category}</Text>
-				<Text className="mt-2 font-display text-4xl leading-10 text-ink-primary">{story.title}</Text>
-				<Text className="mt-4 font-display-italic text-xl leading-7 text-ink-muted">{story.lead}</Text>
+				<Text className="font-body-semibold text-xs uppercase tracking-widest text-red">
+					{story.category}
+				</Text>
+				<Text className="mt-2 font-display text-4xl leading-10 text-ink-primary">
+					{story.title}
+				</Text>
+				<Text className="mt-4 font-display-italic text-xl leading-7 text-ink-muted">
+					{story.lead}
+				</Text>
 				<Text className="my-5 text-center text-red">✦</Text>
 
 				{story.paragraphs.map((paragraph) => (
-					<Text key={paragraph.slice(0, 24)} className="mb-4 font-body text-base leading-7 text-ink-primary">
+					<Text
+						key={paragraph.slice(0, 24)}
+						className="mb-4 font-body text-base leading-7 text-ink-primary"
+					>
 						{paragraph}
 					</Text>
 				))}
 
 				<View className="mt-4 rounded-2xl border border-line bg-cream p-4">
-					<Text className="font-body-semibold text-sm text-ink-muted">{t("stories.sources")}</Text>
+					<Text className="font-body-semibold text-sm text-ink-muted">
+						{t("stories.sources")}
+					</Text>
 					{story.sources.map((source) => (
 						<Pressable
 							key={source.id}
@@ -79,8 +106,12 @@ export const StoryReader = ({ storyId }: StoryReaderProps) => {
 							className="mt-3 flex-row items-center justify-between"
 						>
 							<View className="flex-1 pr-3">
-								<Text className="font-body-semibold text-base text-ink-primary">{source.title}</Text>
-								<Text className="font-body text-sm text-ink-muted">{source.publisher}</Text>
+								<Text className="font-body-semibold text-base text-ink-primary">
+									{source.title}
+								</Text>
+								<Text className="font-body text-sm text-ink-muted">
+									{source.publisher}
+								</Text>
 							</View>
 							<Ionicons name="open-outline" size={18} color={theme.tint} />
 						</Pressable>
@@ -89,9 +120,15 @@ export const StoryReader = ({ storyId }: StoryReaderProps) => {
 
 				{story.quiz ? (
 					<View className="mt-6 rounded-2xl border border-line bg-cream-deep p-4">
-						<Text className="font-body text-xs uppercase tracking-wide text-ink-muted">{t("stories.quizSoonEyebrow")}</Text>
-						<Text className="mt-1 font-display text-2xl text-ink-primary">{t("stories.quizSoonTitle")}</Text>
-						<Text className="mt-1 font-body text-base text-ink-muted">{t("stories.quizInviteBody")}</Text>
+						<Text className="font-body text-xs uppercase tracking-wide text-ink-muted">
+							{t("stories.quizSoonEyebrow")}
+						</Text>
+						<Text className="mt-1 font-display text-2xl text-ink-primary">
+							{t("stories.quizSoonTitle")}
+						</Text>
+						<Text className="mt-1 font-body text-base text-ink-muted">
+							{t("stories.quizInviteBody")}
+						</Text>
 						<View className="mt-4">
 							<Button
 								label={
@@ -107,9 +144,15 @@ export const StoryReader = ({ storyId }: StoryReaderProps) => {
 					</View>
 				) : (
 					<View className="mt-6 rounded-2xl border border-line bg-cream-deep p-4">
-						<Text className="font-body text-xs uppercase tracking-wide text-ink-muted">{t("stories.quizSoonEyebrow")}</Text>
-						<Text className="mt-1 font-display text-2xl text-ink-primary">{t("stories.quizSoonTitle")}</Text>
-						<Text className="mt-1 font-body text-base text-ink-muted">{t("stories.quizSoonBody")}</Text>
+						<Text className="font-body text-xs uppercase tracking-wide text-ink-muted">
+							{t("stories.quizSoonEyebrow")}
+						</Text>
+						<Text className="mt-1 font-display text-2xl text-ink-primary">
+							{t("stories.quizSoonTitle")}
+						</Text>
+						<Text className="mt-1 font-body text-base text-ink-muted">
+							{t("stories.quizSoonBody")}
+						</Text>
 					</View>
 				)}
 

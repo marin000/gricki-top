@@ -1,6 +1,7 @@
 export const TIMING_WINDOW_MS = 60_000;
 
-export const msUntil = (targetMs: number, nowMs: number): number => targetMs - nowMs;
+export const msUntil = (targetMs: number, nowMs: number): number =>
+	targetMs - nowMs;
 
 export type CountdownParts = {
 	hours: string;
@@ -25,7 +26,8 @@ export const getCountdownParts = (remainingMs: number): CountdownParts => {
 };
 
 export const formatCountdown = (remainingMs: number): string => {
-	const { hours, minutes, seconds, totalSeconds } = getCountdownParts(remainingMs);
+	const { hours, minutes, seconds, totalSeconds } =
+		getCountdownParts(remainingMs);
 	if (totalSeconds >= 3600) {
 		return `${hours}:${minutes}:${seconds}`;
 	}
@@ -48,19 +50,20 @@ export const isInsideTimingWindow = (
 	return Math.abs(nowMs - noonMs) <= windowMs;
 };
 
-export const hasPassedNoon = (nowMs: number, noonMs: number): boolean => nowMs >= noonMs;
+export const hasPassedNoon = (nowMs: number, noonMs: number): boolean =>
+	nowMs >= noonMs;
 
-/** Countdown target: today's noon if still ahead, otherwise next noon. */
+/** Countdown target: today's noon if still ahead, otherwise the next future noon. */
 export const resolveCountdownTargetMs = (
 	nowMs: number,
 	todayNoonMs: number | null,
 	nextNoonMs: number | null,
 ): number | null => {
-	if (todayNoonMs == null) {
-		return nextNoonMs;
-	}
-	if (nowMs < todayNoonMs) {
+	if (todayNoonMs != null && nowMs < todayNoonMs) {
 		return todayNoonMs;
 	}
-	return nextNoonMs ?? todayNoonMs;
+	if (nextNoonMs != null && nextNoonMs > nowMs) {
+		return nextNoonMs;
+	}
+	return null;
 };

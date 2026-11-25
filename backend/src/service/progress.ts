@@ -94,6 +94,19 @@ export const getDeviceProgress = async (
 	};
 };
 
+const asBool = (value: unknown, fallback: boolean): boolean => {
+	if (typeof value === "boolean") {
+		return value;
+	}
+	if (value === "true" || value === 1 || value === "1") {
+		return true;
+	}
+	if (value === "false" || value === 0 || value === "0") {
+		return false;
+	}
+	return fallback;
+};
+
 export const patchDeviceSettings = async (
 	deviceId: string,
 	patch: Partial<DeviceSettings>,
@@ -110,14 +123,25 @@ export const patchDeviceSettings = async (
 		reminderLeadMinutes: 1,
 	};
 
-	device.settings = {
-		soundEnabled: patch.soundEnabled ?? current.soundEnabled,
-		hapticsEnabled: patch.hapticsEnabled ?? current.hapticsEnabled,
-		reminderEnabled: patch.reminderEnabled ?? current.reminderEnabled,
+	const next: DeviceSettings = {
+		soundEnabled:
+			patch.soundEnabled !== undefined
+				? asBool(patch.soundEnabled, current.soundEnabled)
+				: current.soundEnabled,
+		hapticsEnabled:
+			patch.hapticsEnabled !== undefined
+				? asBool(patch.hapticsEnabled, current.hapticsEnabled)
+				: current.hapticsEnabled,
+		reminderEnabled:
+			patch.reminderEnabled !== undefined
+				? asBool(patch.reminderEnabled, current.reminderEnabled)
+				: current.reminderEnabled,
 		reminderLeadMinutes:
-			patch.reminderLeadMinutes ?? current.reminderLeadMinutes,
+			typeof patch.reminderLeadMinutes === "number"
+				? patch.reminderLeadMinutes
+				: current.reminderLeadMinutes,
 	};
 
-	await device.save();
-	return device.settings as DeviceSettings;
+	await Device.updateOne({ deviceId }, { $set: { settings: next } }).exec();
+	return next;
 };

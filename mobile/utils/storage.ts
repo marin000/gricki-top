@@ -17,23 +17,26 @@ export type OutboxItem = {
 	createdAt: string;
 };
 
-export const readStoriesCache = async (): Promise<CachedStoriesPayload | null> => {
-	const raw = await AsyncStorage.getItem(STORIES_CACHE_KEY);
-	if (!raw) {
-		return null;
-	}
-	try {
-		return JSON.parse(raw) as CachedStoriesPayload;
-	} catch {
-		return null;
-	}
-};
+export const readStoriesCache =
+	async (): Promise<CachedStoriesPayload | null> => {
+		const raw = await AsyncStorage.getItem(STORIES_CACHE_KEY);
+		if (!raw) {
+			return null;
+		}
+		try {
+			return JSON.parse(raw) as CachedStoriesPayload;
+		} catch {
+			return null;
+		}
+	};
 
-export const writeStoriesCache = async (payload: CachedStoriesPayload): Promise<void> => {
+export const writeStoriesCache = async (
+	payload: CachedStoriesPayload,
+): Promise<void> => {
 	await AsyncStorage.setItem(STORIES_CACHE_KEY, JSON.stringify(payload));
 };
 
-export const readSettingsCache = async <T,>(): Promise<T | null> => {
+export const readSettingsCache = async <T>(): Promise<T | null> => {
 	const raw = await AsyncStorage.getItem(SETTINGS_CACHE_KEY);
 	if (!raw) {
 		return null;
@@ -61,14 +64,28 @@ export const readOutbox = async (): Promise<OutboxItem[]> => {
 	}
 };
 
-export const enqueueOutbox = async (item: Omit<OutboxItem, "createdAt">): Promise<void> => {
+export const enqueueOutbox = async (
+	item: Omit<OutboxItem, "createdAt">,
+): Promise<void> => {
 	const current = await readOutbox();
-	const next = [...current, { ...item, createdAt: new Date().toISOString() }];
+	const withoutSameType =
+		item.type === "settings"
+			? current.filter((queued) => queued.type !== "settings")
+			: current;
+	const next = [
+		...withoutSameType,
+		{ ...item, createdAt: new Date().toISOString() },
+	];
 	await AsyncStorage.setItem(OUTBOX_KEY, JSON.stringify(next));
 };
 
 export const writeOutbox = async (items: OutboxItem[]): Promise<void> => {
 	await AsyncStorage.setItem(OUTBOX_KEY, JSON.stringify(items));
+};
+
+export const clearSettingsOutbox = async (): Promise<void> => {
+	const current = await readOutbox();
+	await writeOutbox(current.filter((item) => item.type !== "settings"));
 };
 
 export const clearLocalAppData = async (): Promise<void> => {

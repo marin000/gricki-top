@@ -41,8 +41,15 @@ export const useStory = (storyId: string) => {
 			}
 		},
 		onSuccess: async () => {
-			await queryClient.invalidateQueries({ queryKey: ["story", identity?.deviceId, storyId] });
-			await queryClient.invalidateQueries({ queryKey: ["progress", identity?.deviceId] });
+			await queryClient.invalidateQueries({
+				queryKey: ["story", identity?.deviceId, storyId],
+			});
+			await queryClient.invalidateQueries({
+				queryKey: ["stories", identity?.deviceId],
+			});
+			await queryClient.invalidateQueries({
+				queryKey: ["progress", identity?.deviceId],
+			});
 		},
 	});
 

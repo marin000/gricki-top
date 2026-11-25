@@ -6,8 +6,8 @@ import { AppState, type AppStateStatus } from "react-native";
 import { ApiError, createTimingAttempt } from "@/api";
 import { useDevice } from "@/context";
 import type { TimingAttempt } from "@/interface";
-import { estimateServerNowMs } from "@/utils/clock-sync";
 import { hasAutoFiredToday, markAutoFiredToday } from "@/utils/cannon-storage";
+import { estimateServerNowMs } from "@/utils/clock-sync";
 import {
 	formatCountdown,
 	formatDeltaLabel,
@@ -26,9 +26,11 @@ import { useSettings } from "./use-settings";
 export type TopMode = "experience" | "challenge";
 
 export const useTopExperience = () => {
-	const { identity, bootstrap, clockSync, isOnline, refreshBootstrap } = useDevice();
+	const { identity, bootstrap, clockSync, isOnline, refreshBootstrap } =
+		useDevice();
 	const { settings } = useSettings();
-	const { nowMs, noonMs, countdownTargetMs, localDate, offsetMs, rttMs } = useServerNow();
+	const { nowMs, noonMs, countdownTargetMs, localDate, offsetMs, rttMs } =
+		useServerNow();
 	const cannon = useCannonFx(settings);
 
 	const [mode, setMode] = useState<TopMode>("experience");
@@ -42,21 +44,34 @@ export const useTopExperience = () => {
 	const [autoFireChecked, setAutoFireChecked] = useState(false);
 	const [autoFired, setAutoFired] = useState(false);
 	const [fireOverlayVisible, setFireOverlayVisible] = useState(false);
+	const [experienceInfoVisible, setExperienceInfoVisible] = useState(false);
 	const [challengeInfoVisible, setChallengeInfoVisible] = useState(false);
 
 	const firedRef = useRef(false);
 	const tapLockedRef = useRef(false);
 	const missedNoonSheetRef = useRef(false);
 
-	const remainingMs = countdownTargetMs == null ? null : msUntil(countdownTargetMs, nowMs);
-	const countdownLabel = remainingMs == null ? "--:--" : formatCountdown(remainingMs);
+	const remainingMs =
+		countdownTargetMs == null ? null : msUntil(countdownTargetMs, nowMs);
+	const countdownLabel =
+		remainingMs == null || remainingMs <= 0
+			? "--:--"
+			: formatCountdown(remainingMs);
 	const countdownParts =
-		remainingMs == null
+		remainingMs == null || remainingMs <= 0
 			? { hours: "--", minutes: "--", seconds: "--", totalSeconds: 0 }
 			: getCountdownParts(remainingMs);
 	const noonPassed = noonMs != null && hasPassedNoon(nowMs, noonMs);
 	const inWindow = noonMs != null && isInsideTimingWindow(nowMs, noonMs);
 	const beforeWindow = noonMs != null && nowMs < noonMs - TIMING_WINDOW_MS;
+
+	// After noon, bootstrap may still have nextNoonAt === todayNoonAt until refreshed.
+	useEffect(() => {
+		if (!noonPassed || countdownTargetMs != null) {
+			return;
+		}
+		void refreshBootstrap().catch(() => undefined);
+	}, [countdownTargetMs, noonPassed, refreshBootstrap]);
 
 	useEffect(() => {
 		if (!localDate) {
@@ -89,6 +104,7 @@ export const useTopExperience = () => {
 			if (!missedNoonSheetRef.current) {
 				missedNoonSheetRef.current = true;
 				setSheetEligible(true);
+				void refreshBootstrap().catch(() => undefined);
 			}
 			return;
 		}
@@ -104,12 +120,26 @@ export const useTopExperience = () => {
 			setFireOverlayVisible(true);
 			await cannon.fire();
 			setSheetEligible(true);
+			await refreshBootstrap().catch(() => undefined);
 		})();
-	}, [autoFireChecked, cannon, localDate, mode, noonMs, nowMs]);
+	}, [
+		autoFireChecked,
+		cannon,
+		localDate,
+		mode,
+		noonMs,
+		nowMs,
+		refreshBootstrap,
+	]);
 
 	useEffect(() => {
 		const onChange = (state: AppStateStatus) => {
-			if (state !== "active" && mode === "challenge" && challengeArmed && !tapLockedRef.current) {
+			if (
+				state !== "active" &&
+				mode === "challenge" &&
+				challengeArmed &&
+				!tapLockedRef.current
+			) {
 				setChallengeArmed(false);
 				setChallengeAborted(true);
 			}
@@ -127,12 +157,14 @@ export const useTopExperience = () => {
 		setChallengeArmed(true);
 	}, []);
 
-	const playDemo = useCallback(async () => {
+	const openExperienceInfo = useCallback(() => {
 		setMode("experience");
-		setFireOverlayVisible(true);
-		await cannon.fire({ demo: true });
-		setSheetEligible(true);
-	}, [cannon]);
+		setExperienceInfoVisible(true);
+	}, []);
+
+	const closeExperienceInfo = useCallback(() => {
+		setExperienceInfoVisible(false);
+	}, []);
 
 	const closeFireOverlay = useCallback(() => {
 		setFireOverlayVisible(false);
@@ -147,20 +179,32 @@ export const useTopExperience = () => {
 	}, []);
 
 	const selectChallengeMode = useCallback(() => {
-		setMode("challenge");
 		if (noonMs == null) {
 			openChallengeInfo();
 			return;
 		}
 		if (isInsideTimingWindow(estimateServerNowMs(offsetMs), noonMs)) {
+			setMode("challenge");
 			armChallenge();
 			return;
 		}
 		openChallengeInfo();
 	}, [armChallenge, noonMs, offsetMs, openChallengeInfo]);
 
+	useEffect(() => {
+		if (!inWindow && challengeArmed) {
+			setChallengeArmed(false);
+		}
+	}, [challengeArmed, inWindow]);
+
 	const submitTap = useCallback(async () => {
-		if (!identity || !localDate || noonMs == null || tapLockedRef.current || isSubmitting) {
+		if (
+			!identity ||
+			!localDate ||
+			noonMs == null ||
+			tapLockedRef.current ||
+			isSubmitting
+		) {
 			return;
 		}
 		if (!isInsideTimingWindow(estimateServerNowMs(offsetMs), noonMs)) {
@@ -198,7 +242,11 @@ export const useTopExperience = () => {
 			setLocalDeltaLabel(attempt.label);
 			setSheetEligible(true);
 		} catch (error) {
-			if (error instanceof ApiError && error.status === 409 && error.code === "TIMING_ALREADY_RECORDED") {
+			if (
+				error instanceof ApiError &&
+				error.status === 409 &&
+				error.code === "TIMING_ALREADY_RECORDED"
+			) {
 				setTimingError("Današnji pokušaj je već zabilježen.");
 			} else {
 				await enqueueOutbox({
@@ -227,7 +275,9 @@ export const useTopExperience = () => {
 				});
 				setSheetEligible(true);
 				if (isOnline) {
-					setTimingError(error instanceof Error ? error.message : "Slanje nije uspjelo.");
+					setTimingError(
+						error instanceof Error ? error.message : "Slanje nije uspjelo.",
+					);
 				}
 			}
 		} finally {
@@ -274,12 +324,14 @@ export const useTopExperience = () => {
 		challengeAborted,
 		armChallenge,
 		submitTap,
-		playDemo,
-		fireOverlayVisible,
-		closeFireOverlay,
+		openExperienceInfo,
+		experienceInfoVisible,
+		closeExperienceInfo,
 		challengeInfoVisible,
 		openChallengeInfo,
 		closeChallengeInfo,
+		fireOverlayVisible,
+		closeFireOverlay,
 		selectChallengeMode,
 		isSubmitting,
 		timingResult,

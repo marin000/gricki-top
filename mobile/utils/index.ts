@@ -37,6 +37,7 @@ export {
 export {
 	type CachedStoriesPayload,
 	clearLocalAppData,
+	clearSettingsOutbox,
 	enqueueOutbox,
 	type OutboxItem,
 	readOutbox,

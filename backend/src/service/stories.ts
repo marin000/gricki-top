@@ -22,16 +22,19 @@ const mapSource = (source: {
 	checkedAt: source.checkedAt.toISOString(),
 });
 
-const mapStorySummary = (story: {
-	id: string;
-	dayNumber?: number | null;
-	isMain: boolean;
-	title: string;
-	lead: string;
-	category: string;
-	publishAt?: Date | null;
-	version: number;
-}) => ({
+const mapStorySummary = (
+	story: {
+		id: string;
+		dayNumber?: number | null;
+		isMain: boolean;
+		title: string;
+		lead: string;
+		category: string;
+		publishAt?: Date | null;
+		version: number;
+	},
+	readAt: Date | null = null,
+) => ({
 	id: story.id,
 	dayNumber: story.dayNumber ?? null,
 	isMain: story.isMain,
@@ -40,9 +43,11 @@ const mapStorySummary = (story: {
 	category: story.category,
 	publishAt: story.publishAt ? story.publishAt.toISOString() : null,
 	version: story.version,
+	readAt: readAt ? readAt.toISOString() : null,
 });
 
 export const listPublishedStories = async (options: {
+	deviceId: string;
 	limit: number;
 	cursor?: string;
 	now?: Date;
@@ -75,8 +80,24 @@ export const listPublishedStories = async (options: {
 	const page = rows.slice(0, limit);
 	const next = rows.length > limit ? page[page.length - 1] : null;
 
+	const progressRows =
+		page.length === 0
+			? []
+			: await StoryProgress.find({
+					deviceId: options.deviceId,
+					storyId: { $in: page.map((story) => story.id) },
+				})
+					.select("storyId readAt")
+					.lean()
+					.exec();
+	const readAtByStoryId = new Map(
+		progressRows.map((row) => [row.storyId, row.readAt ?? null]),
+	);
+
 	return {
-		items: page.map(mapStorySummary),
+		items: page.map((story) =>
+			mapStorySummary(story, readAtByStoryId.get(story.id) ?? null),
+		),
 		nextCursor: next?.publishAt
 			? encodeStoryCursor(new Date(next.publishAt), next.id)
 			: null,

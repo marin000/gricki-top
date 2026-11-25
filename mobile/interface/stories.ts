@@ -17,13 +17,13 @@ export const storySummarySchema = z.object({
 	category: z.string(),
 	publishAt: z.string().nullable(),
 	version: z.number(),
+	readAt: z.string().nullable().optional(),
 });
 
 export const storyDetailSchema = storySummarySchema.extend({
 	paragraphs: z.array(z.string()),
 	sourceIds: z.array(z.string()),
 	sources: z.array(storySourceSchema),
-	readAt: z.string().nullable().optional(),
 	promptDismissedAt: z.string().nullable().optional(),
 	quiz: z
 		.object({
