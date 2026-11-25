@@ -1,6 +1,7 @@
+import { setAudioModeAsync, useAudioPlayer } from "expo-audio";
 import * as Haptics from "expo-haptics";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { AccessibilityInfo, NativeModules } from "react-native";
+import { useCallback, useEffect, useState } from "react";
+import { AccessibilityInfo } from "react-native";
 import {
 	cancelAnimation,
 	useSharedValue,
@@ -14,64 +15,25 @@ type FireOptions = {
 	demo?: boolean;
 };
 
-type SoundHandle = {
-	setPositionAsync: (positionMillis: number) => Promise<unknown>;
-	playAsync: () => Promise<unknown>;
-	unloadAsync: () => Promise<unknown>;
-};
-
-/** Skip expo-av entirely when native binary is missing (Expo Go mismatch / web). */
-const isExpoAvAvailable = (): boolean =>
-	Boolean(NativeModules.ExponentAV || NativeModules.ExpoAV);
-
-const loadCannonSound = async (): Promise<SoundHandle | null> => {
-	if (!isExpoAvAvailable()) {
-		return null;
-	}
-
-	try {
-		const { Audio } = await import("expo-av");
-		await Audio.setAudioModeAsync({
-			playsInSilentModeIOS: true,
-			allowsRecordingIOS: false,
-			staysActiveInBackground: false,
-		});
-		const { sound } = await Audio.Sound.createAsync(
-			// eslint-disable-next-line @typescript-eslint/no-require-imports
-			require("../assets/cannon-boom.mp3"),
-			{ volume: 0.85 },
-		);
-		return sound;
-	} catch {
-		return null;
-	}
-};
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const cannonBoomSource = require("../assets/cannon-boom.mp3");
 
 export const useCannonFx = (settings: DeviceSettings) => {
-	const soundRef = useRef<SoundHandle | null>(null);
+	const player = useAudioPlayer(cannonBoomSource);
 	const [isFiring, setIsFiring] = useState(false);
 	const [smokeOpacity, setSmokeOpacity] = useState(0);
 	const recoil = useSharedValue(0);
 	const flash = useSharedValue(0);
 
 	useEffect(() => {
-		let cancelled = false;
-
-		void (async () => {
-			const sound = await loadCannonSound();
-			if (cancelled) {
-				await sound?.unloadAsync();
-				return;
-			}
-			soundRef.current = sound;
-		})();
-
-		return () => {
-			cancelled = true;
-			void soundRef.current?.unloadAsync();
-			soundRef.current = null;
-		};
-	}, []);
+		void setAudioModeAsync({
+			playsInSilentMode: true,
+			interruptionMode: "mixWithOthers",
+		}).catch(() => {
+			// audio mode unavailable in this runtime
+		});
+		player.volume = 0.85;
+	}, [player]);
 
 	const fire = useCallback(
 		async (_options: FireOptions = {}) => {
@@ -91,10 +53,10 @@ export const useCannonFx = (settings: DeviceSettings) => {
 				}
 			}
 
-			if (settings.soundEnabled && soundRef.current) {
+			if (settings.soundEnabled) {
 				try {
-					await soundRef.current.setPositionAsync(0);
-					await soundRef.current.playAsync();
+					await player.seekTo(0);
+					player.play();
 				} catch {
 					// ignore playback errors
 				}
@@ -124,7 +86,7 @@ export const useCannonFx = (settings: DeviceSettings) => {
 				reduceMotion ? 200 : 900,
 			);
 		},
-		[flash, recoil, settings.hapticsEnabled, settings.soundEnabled],
+		[flash, player, recoil, settings.hapticsEnabled, settings.soundEnabled],
 	);
 
 	return {
